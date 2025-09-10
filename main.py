@@ -2,12 +2,13 @@ import os
 from random import randint
 import pygame
 from time import time
+import sys
 pygame.init()
 FPS = 40
 clock = pygame.time.Clock()
 window  = pygame.display.set_mode((600, 600))
 window.fill((173,216,230))
-pygame.display.set_caption('four in row')
+pygame.display.set_caption('sapper')
 class Label():
     def __init__(self,text,font_size,x,y,wieght,hieght,color):
         self.rect = pygame.Rect(x, y, wieght, hieght)
@@ -27,10 +28,10 @@ class Label():
 
 class Menu():
     def __init__(self):
-        self.label = Label('Выберите уровень сложности:',20,150,50,0,0,(0,0,0))
-        self.btns =[Label('легко',20,200,120,200,70,(0,255,0))]
-        self.btns.append(Label('нормально',20,200,320,200,70,(255,255,0)))
-        self.btns.append(Label('сложно',20,200,500,200,70,(255,0,0)))
+        self.label = Label('Select difficulty level:',20,200,50,0,0,(0,0,0))
+        self.btns =[Label('easy',20,200,120,200,70,(0,255,0))]
+        self.btns.append(Label('normal',20,200,320,200,70,(255,255,0)))
+        self.btns.append(Label('hard',20,200,500,200,70,(255,0,0)))
 
     def draw(self):
         [i.draw_rect() for i in self.btns]
@@ -40,9 +41,9 @@ class Menu():
     def presed(self,x,y):
         for i in self.btns:
             if i.collidepoint(x,y):
-                if i.text == 'легко':
+                if i.text == 'easy':
                     return Game_map(10,10,15,40)
-                elif i.text == 'нормально':
+                elif i.text == 'normal':
                     return Game_map(17,17,50,17)
                 else:
                     return Game_map(25,25,100,15)
@@ -103,12 +104,10 @@ class Game_map():
                         lambda i, j:(i+1,j-1),
                         lambda i, j:(i-1,j+1)]    
 
-        filename = os.path.join(os.path.abspath(__file__+'/..'),'images','flag.png')
-        flag = pygame.image.load(filename)
+        flag = pygame.image.load('images/flag.png')
         flag.set_colorkey((255,255,255))
         flag = pygame.transform.scale(flag,(self.block_size-7,self.block_size-7))
-        filename = os.path.join(os.path.abspath(__file__+'/..'),'images','bomb.png')
-        bomb = pygame.image.load(filename)
+        bomb = pygame.image.load('images/bomb.png')
         bomb.set_colorkey((255,255,255))
         bomb = pygame.transform.scale(bomb,(self.block_size,self.block_size))
            
@@ -224,14 +223,13 @@ def start_game(game_map):
         game_map.draw_map()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 game_map.check_right_click(*event.pos)
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 game_map.check_left_click(*event.pos)
         if game_map.check_win():
             game_map.res_anim('You win',(0,255,0))
-            print('you win')
             return
         if game_map.lost:
             game_map.res_anim('You lost',(255,0,0))
@@ -256,7 +254,7 @@ def main():
         menu.draw()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 my_map = menu.presed(*event.pos)
                 if my_map:
